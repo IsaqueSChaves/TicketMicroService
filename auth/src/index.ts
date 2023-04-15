@@ -31,7 +31,7 @@ const start = async () => {
     console.log(error);
   }
   app.listen(port, () => {
-    console.log(`Listening on ${port}`);
+    console.log(`Listening on ${port}!`);
   });
 };
 

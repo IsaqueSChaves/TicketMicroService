@@ -1,4 +1,4 @@
 /skaffold.yaml
- **/node_modules
+**/node_modules
 /infra
 /auth/node_modules

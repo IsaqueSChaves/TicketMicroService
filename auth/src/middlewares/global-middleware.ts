@@ -8,6 +8,7 @@ export const validate = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
+    console.log("Not valid data");
     throw new RequestValidationError(errors.array());
   }
 
