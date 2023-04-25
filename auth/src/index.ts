@@ -4,8 +4,6 @@ import { app } from "./app";
 const port = 2500;
 
 const start = async () => {
-  console.log("Jwt");
-  
   if (!process.env.JWT_SECRET) {
     throw new Error("JWT secret is required");
   }
