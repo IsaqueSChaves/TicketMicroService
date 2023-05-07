@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import Error from "@/components/error";
+import Router from "next/router";
 
 export default function Signup() {
   const { register, handleSubmit, formState } = useForm({
@@ -11,31 +12,30 @@ export default function Signup() {
     },
   });
 
-  const [errorsBack, setErrorsBack] = useState([]);
-
+  const [error, setError] = useState([]);
   const { errors } = formState;
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data, event) => {
     event.preventDefault();
+
     try {
       const { email, password } = data;
-
       const response = await axios.post("/api/users/signup", {
         email,
         password,
       });
-      console.log(response.data);
-    } catch (error) {
-      setErrorsBack(error.response.data);
-      console.log(errorsBack);
+      Router.push("/");
+    } catch (err) {
+      setError(err.response.data.errors);
     }
   };
+
   return (
     <div className="row">
       <div className="mx-auto col-10 col-md-8 col-lg-6">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-3">
-            <h1 className="text-center mt-5 mb-3 display-4">Signup</h1>
+            <h1 className="text-center mt-5 mb-3 display-4">Sign Up</h1>
             <div className="form-group justify-content-center">
               <label className="form-label mt-3 fs-4">Email Address</label>
               <input
@@ -71,13 +71,13 @@ export default function Signup() {
               <p className="text-danger">{errors.password?.message}</p>
             </div>
           </div>
-          <Error errors={errorsBack} />
 
           <div className="text-center">
             <button className="btn btn-secondary text mt-1" type="submit">
               Sign up
             </button>
           </div>
+          {error.length > 0 && <Error errors={error} />}
         </form>
       </div>
     </div>

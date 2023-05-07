@@ -1,24 +1,33 @@
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import axios from "axios";
+import Router from "next/router";
 
 export default function Signin() {
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, formState } = useForm({
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = async (data) => {
+  const { errors } = formState;
+
+  const [error, setError] = useState([]);
+
+  const onSubmit = async (data, event) => {
     event.preventDefault();
 
-    const { email, password } = data;
-
-    const response = await axios.post("/api/users/signup", {
-      email,
-      password,
-    });
-    console.log(response.data);
+    try {
+      const { email, password } = data;
+      const response = await axios.post("/api/users/signin", {
+        email,
+        password,
+      });
+      Router.push("/");
+    } catch (err) {
+      setError(err.response.data.errors);
+    }
   };
 
   return (
@@ -31,30 +40,43 @@ export default function Signin() {
               <label className="form-label mt-3 fs-4">Email Address</label>
               <input
                 placeholder="Email"
+                type="email"
                 className="form-control"
                 {...register("email", {
-                  required: true,
-                  pattern:
-                    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                  required: {
+                    value: true,
+                    message: "Please enter the email address",
+                  },
+                  pattern: {
+                    value: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+                    message: "Please enter a valid email address",
+                  },
                 })}
               />
+              <p className="text-danger">{errors.email?.message}</p>
               <label className="form-label mt-3 fs-4">Password</label>
               <input
                 placeholder="Password"
+                type="password"
                 className="form-control "
                 {...register("password", {
-                  required: true,
-                  minLength: 4,
-                  maxLength: 20,
+                  required: {
+                    value: true,
+                    message: "Please enter the password",
+                  },
+                  minLength: { value: 4, message: "Min length must be 4" },
+                  maxLength: { value: 20, message: "Max length must be 20" },
                 })}
               />
+              <p className="text-danger">{errors.password?.message}</p>
             </div>
           </div>
           <div className="text-center">
             <button className="btn btn-secondary text mt-1" type="submit">
-              Sign In
+              Sign up
             </button>
           </div>
+          {error.length > 0 && <Error errors={error} />}
         </form>
       </div>
     </div>
