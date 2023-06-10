@@ -1,8 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tickets-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tickets
+  template:
+    metadata:
+      labels:
+        app: tickets
+    spec:
+      containers:
+        - name: tickets
+          image: us.gcr.io/ticketing-dev-382919/tickets
+          env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
+            - name: NATS_CLUSTER_ID
+              value: ticketing
+            - name: MONGO_URI_TICKETS
+              value: "mongodb://tickets-mongo-srv:27017/tickets"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: JWT_SECRET
+                  name: jwt-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tickets-srv
+spec:
+  selector:
+    app: tickets
+  ports:
+    - name: tickets
+      protocol: TCP
+      port: 2600
+      targetPort: 2600
 
-          - path: /?(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: client-srv
-                port:
-                  number: 3000
+
+- image: us.gcr.io/ticketing-dev-382919/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .

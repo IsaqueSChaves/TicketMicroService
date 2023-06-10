@@ -1,7 +1,6 @@
-import buildClient from "./api/build-client";
+import buildClient from "./api/buildClient";
 
 const Home = ({ response }) => {
-  console.log("Response from index", response);
   return response ? <h1>{response.email}</h1> : <h1>You aren't signed in</h1>;
 };
 

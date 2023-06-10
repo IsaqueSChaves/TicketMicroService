@@ -1,7 +1,8 @@
+import { Error } from "../../components/error";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import axios from "axios";
 import Router from "next/router";
+import axios from "axios";
 
 export default function Signin() {
   const { register, handleSubmit, formState } = useForm({
@@ -27,6 +28,7 @@ export default function Signin() {
       Router.push("/");
     } catch (err) {
       setError(err.response.data.errors);
+      console.log(error.length);
     }
   };
 
@@ -72,11 +74,11 @@ export default function Signin() {
             </div>
           </div>
           <div className="text-center">
-            <button className="btn btn-secondary text mt-1" type="submit">
-              Sign up
+            <button className="btn btn-outline-secondary" type="submit">
+              Sign in
             </button>
           </div>
-          {error.length > 0 && <Error errors={error} />}
+          {error.length > 0 && <Error errorsBack={error} />}
         </form>
       </div>
     </div>

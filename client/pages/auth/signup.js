@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import Error from "@/components/error";
+import { useState } from "react";
 import Router from "next/router";
+import axios from "axios";
 
 export default function Signup() {
   const { register, handleSubmit, formState } = useForm({
@@ -26,7 +26,10 @@ export default function Signup() {
       });
       Router.push("/");
     } catch (err) {
+      console.log("AAAAAAAAAAAAAAAAAA");
       setError(err.response.data.errors);
+      console.log(err);
+      console.log(error.length);
     }
   };
 

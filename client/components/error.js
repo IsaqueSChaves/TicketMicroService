@@ -1,8 +1,8 @@
-export default function Error({ errors }) {
+export default function Error({ errorsBack }) {
   {
     return (
       <ul>
-        {errors.map((err) => {
+        {errorsBack.map((err) => {
           return (
             <li className="text-danger" key={err.message}>
               {err.message}

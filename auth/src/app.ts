@@ -1,19 +1,16 @@
-import express from "express";
-import "express-async-errors";
-import { json } from "body-parser";
-import cookieSession from "cookie-session";
-
-import { signUpRouter } from "./routes/signup";
-import { currentUserRouter } from "./routes/current-user";
-import { signInRouter } from "./routes/signin";
+import { NotFoundError, errorHandler } from "@isctickets/common";
+import { currentUserRouter } from "./routes/currentUser";
 import { signOutRouter } from "./routes/signout";
-import { errorHandler } from "./middlewares/error-handling";
-import { NotFoundError } from "./errors/not-found-error";
+import { signInRouter } from "./routes/signin";
+import { signUpRouter } from "./routes/signup";
+import cookieSession from "cookie-session";
+import { json } from "body-parser";
+import "express-async-errors";
+import express from "express";
 
 const app = express();
-app.use(json());
 app.set("trust proxy", true);
-
+app.use(json());
 app.use(
   cookieSession({
     signed: false,
@@ -21,13 +18,16 @@ app.use(
   })
 );
 
+app.use(errorHandler);
 app.use(signUpRouter);
 app.use(currentUserRouter);
 app.use(signInRouter);
 app.use(signOutRouter);
-app.use(errorHandler);
-app.all("*", async () => {
+
+app.all("*", async (req, res) => {
   throw new NotFoundError();
 });
+
+app.use(errorHandler);
 
 export { app };
