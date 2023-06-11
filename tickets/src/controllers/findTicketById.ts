@@ -1,13 +1,21 @@
 import { NotFoundError } from "@isctickets/common";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { Ticket } from "../models/ticket";
 
-export const findTicketById = async (req: Request, res: Response) => {
-  const id = req.params.id;
-  const ticket = await Ticket.findById(id);
+export const findTicketById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const id = req.params.id;
+    const ticket = await Ticket.findById(id);
 
-  if (!ticket) {
-    throw new NotFoundError();
+    if (!ticket) {
+      throw new NotFoundError();
+    }
+    return res.status(200).send(ticket);
+  } catch (err) {
+    next(err);
   }
-  res.send(ticket);
 };

@@ -1,7 +1,6 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import request from "supertest";
-import { app } from "../app";
 import jwt from "jsonwebtoken";
 
 declare global {
@@ -19,16 +18,17 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  jest.clearAllMocks();
   const collections = await mongoose.connection.db.collections();
 
   for (let collection of collections) {
-    await collection.deleteMany({});
+    await collection.deleteMany();
   }
 });
 
 afterAll(async () => {
-  await mongo.stop();
+  if (mongo) {
+    await mongo.stop();
+  }
   await mongoose.connection.close();
 });
 
@@ -52,5 +52,5 @@ global.signin = () => {
   const base64 = Buffer.from(sessionJSON).toString("base64");
 
   // return a string thats the cookie with the encoded data
-  return [`session=${base64}`];
+  return [`express:sess=${base64}`];
 };

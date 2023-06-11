@@ -26,10 +26,7 @@ export default function Signup() {
       });
       Router.push("/");
     } catch (err) {
-      console.log("AAAAAAAAAAAAAAAAAA");
       setError(err.response.data.errors);
-      console.log(err);
-      console.log(error.length);
     }
   };
 
@@ -76,11 +73,11 @@ export default function Signup() {
           </div>
 
           <div className="text-center">
-            <button className="btn btn-secondary text mt-1" type="submit">
+            <button className="btn btn-outline-primary mt-1" type="submit">
               Sign up
             </button>
           </div>
-          {error.length > 0 && <Error errors={error} />}
+          {error.length > 0 && <Error errorsBack={error} />}
         </form>
       </div>
     </div>

@@ -2,14 +2,14 @@ import { natsWrapper } from "./natsWrapper";
 import mongoose from "mongoose";
 import { app } from "./app";
 
-const port = 2600;
+const port = 2700;
 
 const start = async () => {
   if (!process.env.JWT_SECRET) {
     throw new Error("JWT_SECRET must be defined");
   }
   if (!process.env.MONGO_URI) {
-    throw new Error("MONGO_URI must be defined at Tickets");
+    throw new Error("MONGO_URI must be defined at Orders");
   }
 
   if (!process.env.NATS_CLIENT_ID) {
@@ -26,7 +26,7 @@ const start = async () => {
 
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log("Connected to MongoDB at Tickets!");
+    console.log("Connected to MongoDB at Orders!");
 
     await natsWrapper.connect(
       process.env.NATS_CLUSTER_ID,

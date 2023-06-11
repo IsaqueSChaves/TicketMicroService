@@ -1,5 +1,5 @@
 import { validateRequest, BadRequestError } from "@isctickets/common";
-import { Request, Response, Router } from "express";
+import { Request, Response, Router, NextFunction } from "express";
 import { Password } from "../services/password";
 import { body } from "express-validator";
 import { User } from "../models/user";
@@ -17,30 +17,34 @@ router.post(
       .withMessage("You must supply a password"),
   ],
   validateRequest,
-  async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, password } = req.body;
 
-    const user = await User.findOne({email});
-    if (!user) {
-      throw new BadRequestError("Invalid credentials");
+      const user = await User.findOne({ email });
+      if (!user) {
+        throw new BadRequestError("Invalid credentials");
+      }
+
+      //Autentication
+      const passwordMatch = await Password.compare(user.password, password);
+      if (!passwordMatch) {
+        throw new BadRequestError("Invalid credentials");
+      }
+
+      //Generate Jwt token
+      const userJwt = jwt.sign(
+        { id: user.id, email: user.email },
+        process.env.JWT_SECRET!
+      );
+      req.session = {
+        jwt: userJwt,
+      };
+
+      return res.status(200).send(user);
+    } catch (err) {
+      next(err);
     }
-
-    //Autentication
-    const passwordMatch = await Password.compare(user.password, password);
-    if (!passwordMatch) {
-      throw new BadRequestError("Invalid credentials");
-    }
-
-    //Generate Jwt token
-    const userJwt = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET!
-    );
-    req.session = {
-      jwt: userJwt,
-    };
-
-    return res.status(200).send(user);
   }
 );
 
