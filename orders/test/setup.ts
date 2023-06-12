@@ -1,11 +1,12 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import request from "supertest";
 import jwt from "jsonwebtoken";
 
 declare global {
   var signin: () => string[];
 }
+
+jest.mock("../src/natsWrapper");
 
 let mongo: any;
 beforeAll(async () => {
@@ -18,17 +19,16 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  jest.clearAllMocks();
   const collections = await mongoose.connection.db.collections();
 
   for (let collection of collections) {
-    await collection.deleteMany();
+    await collection.deleteMany({});
   }
 });
 
 afterAll(async () => {
-  if (mongo) {
-    await mongo.stop();
-  }
+  await mongo.stop();
   await mongoose.connection.close();
 });
 
@@ -52,5 +52,5 @@ global.signin = () => {
   const base64 = Buffer.from(sessionJSON).toString("base64");
 
   // return a string thats the cookie with the encoded data
-  return [`express:sess=${base64}`];
+  return [`session=${base64}`];
 };

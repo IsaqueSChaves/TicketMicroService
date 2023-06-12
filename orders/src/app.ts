@@ -4,10 +4,10 @@ import { json } from "body-parser";
 import express from "express";
 import "express-async-errors";
 
-import { findOrderById } from "./routes/find-order-by-id";
-import { createOrder } from "./routes/create-order";
-import { cancelOrder } from "./routes/cancel-order";
-import { findOrders } from "./routes/find-orders";
+import { findOrderById } from "./routes/findById";
+import { createOrder } from "./routes/create";
+import { cancelOrder } from "./routes/cancel";
+import { findOrders } from "./routes/findAll";
 
 const app = express();
 app.set("trust proxy", true);
