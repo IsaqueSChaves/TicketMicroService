@@ -1,4 +1,5 @@
 import { Order, OrderStatus } from "../../models/order";
+import { natsWrapper } from "../../natsWrapper";
 import { Ticket } from "../../models/ticket";
 import mongoose from "mongoose";
 import { app } from "../../app";
@@ -59,4 +60,29 @@ it("return not found if another user tries delete order that doesn't exist", asy
     .set("Cookie", global.signin())
     .send()
     .expect(404);
+});
+
+it("cancel an published an event", async () => {
+  const user = global.signin();
+  const ticket = Ticket.build({
+    title: "AM",
+    price: 522,
+  });
+  await ticket.save();
+
+  const { body: order } = await request(app)
+    .post("/api/orders")
+    .set("Cookie", user)
+    .send({ ticketId: ticket.id })
+    .expect(201);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+
+  await request(app)
+    .delete(`/api/orders/${order.id}`)
+    .set("Cookie", user)
+    .send()
+    .expect(204);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalledTimes(2);
 });

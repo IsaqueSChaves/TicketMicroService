@@ -1,4 +1,4 @@
-/* import request from "supertest";
+import request from "supertest";
 import { app } from "../../app";
 import mongoose from "mongoose";
 
@@ -26,17 +26,23 @@ it("returns a 401 if the user is not authenticated", async () => {
 });
 
 it("returns a 401 if the user does not own the ticket", async () => {
-  const response = await request(app)
+  const userOne = global.signin();
+  const userTwo = global.signin();
+
+  const { body: ticket } = await request(app)
     .post("/api/tickets")
-    .set("Cookie", global.signin())
+    .set("Cookie", userOne)
     .send({
       title: "asldkfj",
       price: 20,
-    });
+    })
+    .expect(201);
+
+  console.log(ticket);
 
   await request(app)
-    .put(`/api/tickets/${response.body.id}`)
-    .set("Cookie", global.signin())
+    .put(`/api/tickets/${ticket.id}`)
+    .set("Cookie", userTwo)
     .send({
       title: "alskdjflskjdf",
       price: 1000,
@@ -100,4 +106,4 @@ it("updates the ticket provided valid inputs", async () => {
 
   expect(ticketResponse.body.title).toEqual("new title");
   expect(ticketResponse.body.price).toEqual(100);
-}); */
+});

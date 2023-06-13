@@ -6,6 +6,8 @@ import {
   requireAuth,
   validateRequest,
 } from "@isctickets/common";
+import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
+import { natsWrapper } from "../natsWrapper";
 import { Ticket } from "../models/ticket";
 import { Order } from "../models/order";
 import { body } from "express-validator";
@@ -41,7 +43,7 @@ router.post(
         expiration.getSeconds() + EXPIRATION_WINDOW_SECONDS
       );
 
-      // Build the order and save it to the database
+      /* // Build the order and save it to the database
       const order = Order.build({
         userId: req.currentUser!.id,
         status: OrderStatus.Created,
@@ -51,6 +53,42 @@ router.post(
       await order.save();
 
       // Publish an event saying that an order was created
+       new OrderCreatedPublisher(natsWrapper.client).publish({
+        id: order.id,
+        status: order.status,
+        userId: order.userId,
+        expiresAt: order.expiresAt.toISOString(),
+        ticket: {
+          id: ticket.id,
+          title: ticket.title,
+          price: ticket.price,
+        },
+      });  */
+
+      // Build the order and save it to the database
+      const order = Order.build({
+        userId: req.currentUser!.id,
+        status: OrderStatus.Created,
+        expiresAt: expiration,
+        ticket,
+      });
+      await order.save();
+
+      // Make sure to populate the ticket data before publishing the event
+      await order.populate("ticket");
+
+      // Publish an event saying that an order was created
+      new OrderCreatedPublisher(natsWrapper.client).publish({
+        id: order.id,
+        status: order.status,
+        userId: order.userId,
+        expiresAt: order.expiresAt.toISOString(),
+        ticket: {
+          id: order.ticket.id,
+          title: order.ticket.title,
+          price: order.ticket.price,
+        },
+      });
 
       return res.status(201).send(order);
     } catch (err) {
