@@ -4,9 +4,12 @@ import { app } from "../../app";
 import request from "supertest";
 
 const buildTicket = async () => {
+  const id = new mongoose.Types.ObjectId().toHexString();
+
   const ticket = Ticket.build({
     title: "Taylor",
     price: 145,
+    id,
   });
   await ticket.save();
   return ticket;

@@ -1,5 +1,5 @@
-import { Error } from "../../components/error";
 import { useForm } from "react-hook-form";
+import Error from "@/components/error";
 import { useState } from "react";
 import Router from "next/router";
 import axios from "axios";

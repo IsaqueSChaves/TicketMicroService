@@ -26,13 +26,13 @@ router.post(
         throw new BadRequestError("Invalid credentials");
       }
 
-      //Autentication
+      // Autentication
       const passwordMatch = await Password.compare(user.password, password);
       if (!passwordMatch) {
         throw new BadRequestError("Invalid credentials");
       }
 
-      //Generate Jwt token
+      // Generate Jwt token
       const userJwt = jwt.sign(
         { id: user.id, email: user.email },
         process.env.JWT_SECRET!

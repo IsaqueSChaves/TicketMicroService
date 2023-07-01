@@ -43,28 +43,6 @@ router.post(
         expiration.getSeconds() + EXPIRATION_WINDOW_SECONDS
       );
 
-      /* // Build the order and save it to the database
-      const order = Order.build({
-        userId: req.currentUser!.id,
-        status: OrderStatus.Created,
-        expiresAt: expiration,
-        ticket,
-      });
-      await order.save();
-
-      // Publish an event saying that an order was created
-       new OrderCreatedPublisher(natsWrapper.client).publish({
-        id: order.id,
-        status: order.status,
-        userId: order.userId,
-        expiresAt: order.expiresAt.toISOString(),
-        ticket: {
-          id: ticket.id,
-          title: ticket.title,
-          price: ticket.price,
-        },
-      });  */
-
       // Build the order and save it to the database
       const order = Order.build({
         userId: req.currentUser!.id,
@@ -82,6 +60,7 @@ router.post(
         id: order.id,
         status: order.status,
         userId: order.userId,
+        version: order.version,
         expiresAt: order.expiresAt.toISOString(),
         ticket: {
           id: order.ticket.id,

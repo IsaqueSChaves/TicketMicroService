@@ -20,13 +20,16 @@ export const updateTicket = async (
       throw new NotAuthorizedError();
     }
 
+    const { title, price } = req.body;
+
     ticket.set({
-      title: req.body.title,
-      price: req.body.price,
+      title,
+      price,
     });
     await ticket.save();
     new TicketUpdatedPublisher(natsWrapper.client).publish({
       id: ticket.id,
+      version: ticket.version,
       title: ticket.title,
       price: ticket.price,
       userId: ticket.userId,

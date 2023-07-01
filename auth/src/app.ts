@@ -18,7 +18,6 @@ app.use(
   })
 );
 
-app.use(errorHandler);
 app.use(signUpRouter);
 app.use(currentUserRouter);
 app.use(signInRouter);

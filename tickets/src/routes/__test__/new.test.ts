@@ -59,7 +59,10 @@ it("returns an error if an invalid price is provided", async () => {
 });
 
 it("creates a ticket with valid inputs", async () => {
-  request(app)
+  let tickets = (await Ticket.find({})).length;
+  expect(tickets === 0);
+
+  await request(app)
     .post("/api/tickets")
     .set("Cookie", global.signin())
     .send({
@@ -67,4 +70,7 @@ it("creates a ticket with valid inputs", async () => {
       price: 20,
     })
     .expect(201);
+
+  tickets = (await Ticket.find({})).length;
+  expect(tickets === 1);
 });

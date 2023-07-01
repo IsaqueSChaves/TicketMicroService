@@ -6,9 +6,11 @@ import { app } from "../../app";
 import request from "supertest";
 
 const buildTicket = async () => {
+  const id = new mongoose.Types.ObjectId().toHexString();
   const ticket = Ticket.build({
     title: "Taylor",
     price: 145,
+    id,
   });
   await ticket.save();
   return ticket;
@@ -64,9 +66,12 @@ it("return not found if another user tries delete order that doesn't exist", asy
 
 it("cancel an published an event", async () => {
   const user = global.signin();
+  const id = new mongoose.Types.ObjectId().toHexString();
+
   const ticket = Ticket.build({
     title: "AM",
     price: 522,
+    id,
   });
   await ticket.save();
 
