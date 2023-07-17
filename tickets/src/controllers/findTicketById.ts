@@ -8,7 +8,7 @@ export const findTicketById = async (
   next: NextFunction
 ) => {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
     const ticket = await Ticket.findById(id);
 
     if (!ticket) {

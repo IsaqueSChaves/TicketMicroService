@@ -60,7 +60,7 @@ ticketSchema.statics.build = (attrs: TicketAttrs) => {
 ticketSchema.set("versionKey", "version");
 ticketSchema.plugin(updateIfCurrentPlugin);
 
-ticketSchema.methods.findByEvent = async function (event: {
+ticketSchema.statics.findByEvent = async function (event: {
   id: string;
   version: number;
 }) {

@@ -1,5 +1,9 @@
+import {
+  BadRequestError,
+  NotAuthorizedError,
+  NotFoundError,
+} from "@isctickets/common";
 import { TicketUpdatedPublisher } from "../events/publishers/ticketUpdatedPublisher";
-import { NotAuthorizedError, NotFoundError } from "@isctickets/common";
 import { Response, Request, NextFunction } from "express";
 import { natsWrapper } from "../natsWrapper";
 import { Ticket } from "../models/ticket";
@@ -18,6 +22,10 @@ export const updateTicket = async (
 
     if (ticket.userId !== req.currentUser!.id) {
       throw new NotAuthorizedError();
+    }
+
+    if (ticket.orderId) {
+      throw new BadRequestError("Cannot edit a reserved ticket");
     }
 
     const { title, price } = req.body;

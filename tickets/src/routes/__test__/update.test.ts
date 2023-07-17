@@ -1,3 +1,4 @@
+import { Ticket } from "../../models/ticket";
 import request from "supertest";
 import { app } from "../../app";
 import mongoose from "mongoose";
@@ -51,7 +52,7 @@ it("returns a 401 if the user does not own the ticket", async () => {
 it("returns a 400 if the user provides an invalid title or price", async () => {
   const cookie = global.signin();
 
-  const response = await request(app)
+  const { body: ticket } = await request(app)
     .post("/api/tickets")
     .set("Cookie", cookie)
     .send({
@@ -60,7 +61,7 @@ it("returns a 400 if the user provides an invalid title or price", async () => {
     });
 
   await request(app)
-    .put(`/api/tickets/${response.body.id}`)
+    .put(`/api/tickets/${ticket.id}`)
     .set("Cookie", cookie)
     .send({
       title: "",
@@ -69,7 +70,7 @@ it("returns a 400 if the user provides an invalid title or price", async () => {
     .expect(400);
 
   await request(app)
-    .put(`/api/tickets/${response.body.id}`)
+    .put(`/api/tickets/${ticket.id}`)
     .set("Cookie", cookie)
     .send({
       title: "alskdfjj",
@@ -98,12 +99,37 @@ it("updates the ticket provided valid inputs", async () => {
     })
     .expect(200);
 
-  const ticketResponse = await request(app)
+  const { body: ticketResponse } = await request(app)
     .get(`/api/tickets/${ticket.id}`)
     .send();
 
-  console.log(cookie);
+  expect(ticketResponse.title).toEqual("new title");
+  expect(ticketResponse.price).toEqual(100);
+});
 
-  expect(ticketResponse.body.title).toEqual("new title");
-  expect(ticketResponse.body.price).toEqual(100);
+it("rejects edit a reserved ticket", async () => {
+  const cookie = global.signin();
+  const orderId = new mongoose.Types.ObjectId().toHexString();
+
+  const { body: ticket } = await request(app)
+    .post("/api/tickets")
+    .set("Cookie", cookie)
+    .send({
+      title: "asldkfj",
+      price: 20,
+    })
+    .expect(201);
+
+  const ticketFound = await Ticket.findById(ticket.id);
+  ticketFound!.set({ orderId });
+  await ticketFound!.save();
+
+  await request(app)
+    .put(`/api/tickets/${ticket.id}`)
+    .set("Cookie", cookie)
+    .send({
+      title: "new title",
+      price: 100,
+    })
+    .expect(400);
 });

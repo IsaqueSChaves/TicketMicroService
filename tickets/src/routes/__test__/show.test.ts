@@ -12,7 +12,7 @@ it("returns the ticket if the ticket is found", async () => {
   const title = "concert";
   const price = 20;
 
-  const { body } = await request(app)
+  const { body: ticket } = await request(app)
     .post("/api/tickets")
     .set("Cookie", global.signin())
     .send({
@@ -21,11 +21,11 @@ it("returns the ticket if the ticket is found", async () => {
     })
     .expect(201);
 
-  const ticketResponse = await request(app)
-    .get(`/api/tickets/${body.id}`)
+  const { body: ticketResponse } = await request(app)
+    .get(`/api/tickets/${ticket.id}`)
     .send()
     .expect(200);
 
-  expect(ticketResponse.body.title).toEqual(title);
-  expect(ticketResponse.body.price).toEqual(price);
+  expect(ticketResponse.title).toEqual(title);
+  expect(ticketResponse.price).toEqual(price);
 });
