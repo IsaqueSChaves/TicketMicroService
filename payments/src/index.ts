@@ -1,11 +1,10 @@
-import { ExpirationCompleteListener } from "./events/listeners/expiration-complete-listener";
-import { TicketCreatedListener } from "./events/listeners/ticket-created-listener";
-import { TicketUpdatedListener } from "./events/listeners/ticket-updated-listener";
+import { OrderCancelledListener } from "./events/listeners/order-cancelled-listener";
+import { OrderCreatedListener } from "./events/listeners/order-created-listener";
 import { natsWrapper } from "./natsWrapper";
 import mongoose from "mongoose";
 import { app } from "./app";
 
-const port = 2700;
+const port = 2800;
 
 const start = async () => {
   if (!process.env.JWT_SECRET) {
@@ -43,9 +42,8 @@ const start = async () => {
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM", () => natsWrapper.client.close());
 
-    new ExpirationCompleteListener(natsWrapper.client).listen();
-    new TicketCreatedListener(natsWrapper.client).listen();
-    new TicketUpdatedListener(natsWrapper.client).listen();
+    new OrderCreatedListener(natsWrapper.client).listen();
+    new OrderCancelledListener(natsWrapper.client).listen();
   } catch (err) {
     console.error(err);
   }
