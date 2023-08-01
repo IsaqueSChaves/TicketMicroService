@@ -1,0 +1,12 @@
+name: tickets_tests
+
+on:
+  pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install and Test
+        run: cd tickets && npm i && npm run test:ci
