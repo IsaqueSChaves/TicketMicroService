@@ -1,18 +1,52 @@
-import buildClient from "./api/buildClient";
+import Router from "next/router";
 
-const Home = ({ response }) => {
-  return response ? (
-    <h1 className="ms-5 mt-3">{response.email}</h1>
-  ) : (
-    <h1 className="ms-5 mt-3">You aren't signed in</h1>
-  );
+const Home = ({ currentUser, tickets }) => {
+	const individualTicket = async (ticketId) => {
+		try {
+			Router.push({
+				pathname: "/tickets/indivdual-ticket",
+				query: { ticketId },
+			});
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	return (
+		<div>
+			<h1>Tickets</h1>
+			<table className="table">
+				<thead>
+					<tr>
+						<th>Title</th>
+						<th>Price</th>
+					</tr>
+				</thead>
+				<tbody>
+					{tickets.length > 0 &&
+						tickets.map((ticket, i) => (
+							<tr
+								onClick={() => individualTicket(ticket.id)}
+								key={i}
+								style={{
+									backgroundColor: "#007bff",
+									color: "#ffffff",
+									cursor: "pointer",
+								}}
+							>
+								<td>{ticket.title}</td>
+								<td>{ticket.price}</td>
+							</tr>
+						))}
+				</tbody>
+			</table>
+		</div>
+	);
 };
 
-Home.getInitialProps = async (context) => {
-  const client = buildClient(context);
-  const response = await client.get("/api/users/currentuser");
-
-  return { response: response ? response.data.currentUser : null };
+Home.getInitialProps = async (context, client, currentUser) => {
+	const { data } = await client.get("/api/tickets");
+	return { tickets: data };
 };
 
 export default Home;
