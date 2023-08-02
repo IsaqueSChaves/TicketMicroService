@@ -15,6 +15,7 @@ jobs:
         env: 
             DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME}}
             DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD}}
+      - run: echo $DOCKER_USERNAME
       - run: cd auth && docker build -t $DOCKER_USERNAME/auth .
       - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
       - run: docker push $DOCKER_USERNAME/auth
