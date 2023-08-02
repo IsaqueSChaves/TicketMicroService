@@ -1,14 +1,13 @@
-name: tickets_tests
+name: tests-payments
 
 on:
   pull_request:
     paths:
-      - "tickets/**"
-
+      - "payments/**"
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Install and Test
-        run: cd tickets && npm i && npm run test:ci
+        run: cd payments && npm i && npm run test:ci

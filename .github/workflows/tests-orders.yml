@@ -1,9 +1,9 @@
-name: auth_tests
+name: tests-orders
 
 on:
   pull_request:
     paths:
-      - "auth/**"
+      - "orders/**"
 
 jobs:
   build:
@@ -11,4 +11,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install and Test
-        run: cd auth && npm i && npm run test:ci
+        run: cd orders && npm i && npm run test:ci
