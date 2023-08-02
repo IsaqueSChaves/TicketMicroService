@@ -1,9 +1,9 @@
-name: orders_tests
+name: tests-tickets
 
 on:
   pull_request:
     paths:
-      - "orders/**"
+      - "tickets/**"
 
 jobs:
   build:
@@ -11,4 +11,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install and Test
-        run: cd orders && npm i && npm run test:ci
+        run: cd tickets && npm i && npm run test:ci
