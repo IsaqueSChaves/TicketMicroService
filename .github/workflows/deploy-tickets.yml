@@ -1,20 +1,20 @@
-name: deploy-payments
+name: deploy-tickets
 
 on:
   push:
     branches:
       - main
     paths:
-      - "payments/**"
+      - "tickets/**"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: cd payments && docker build -t $DOCKER_USERNAME/payments .
+      - run: cd tickets && docker build -t $DOCKER_USERNAME/tickets .
       - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME}}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD}}
-      - run: docker push $DOCKER_USERNAME/payments
+      - run: docker push $DOCKER_USERNAME/tickets
